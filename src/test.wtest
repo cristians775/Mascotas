@@ -1,0 +1,84 @@
+import duenio.*
+import mascota.*
+import sistema.*
+
+describe "Sistema de registros" {
+
+	const juan = new Duenio()
+	const pepe = new Duenio()
+	const gato = new Gato()
+	const perro = new Perro()
+	const entrenador = new Entrenador()
+	const entrenador2 = new Entrenador()
+	const entrenador3 = new Entrenador()
+	const labrador = new Labrador()
+
+	fixture {
+		pepe.edad(17)
+		pepe.valorPropio(30)
+		pepe.nivelDeDiversion(43)
+		juan.edad(25)
+		juan.valorPropio(40)
+		juan.nivelDeDiversion(34)
+		porcentajeAmor.amor(0.5)
+		gato.seguridad(50)
+		gato.diversion(60)
+		perro.nivelDeGuardian(70)
+		labrador.nivelDeGuardian(80)
+		pepe.valorPropio(20)
+		juan.valorPropio(50)
+		entrenador.exp(30)
+		entrenador2.exp(20)
+		entrenador3.exp(10)
+		sistema.agregarFanatico(pepe)
+		sistema.agregarFanatico(juan)
+		sistema.fanaticoAgregaMascota(pepe, perro)
+		sistema.fanaticoAgregaMascota(juan, gato)
+	}
+
+	test "EsFeliz" {
+		sistema.fanaticoDaAmor(pepe, perro)
+		sistema.fanaticoDaAmor(juan, gato)
+		assert.that(!sistema.fanaticoEsFeliz(pepe))
+		assert.that(sistema.fanaticoEsFeliz(juan))
+	}
+
+	test "Entrenar mascota" {
+		sistema.mascotaEsEntrenadaPor(perro, entrenador)
+		sistema.mascotaEsEntrenadaPor(gato, pepe)
+		sistema.entrenadorEntrena(entrenador, perro)
+		sistema.entrenadorEntrena(pepe, gato)
+		assert.throwsException{ sistema.entrenadorEntrena(pepe, perro)}
+		assert.equals(77, perro.nivelDeGuardian())
+		assert.equals(66, gato.diversion())
+	}
+
+	test "Valor total de una mascota" {
+		assert.equals(228, sistema.valorTotalMascota(perro))
+		assert.equals(110, sistema.valorTotalMascota(gato))
+	}
+
+	test "Mascota considerada buena" {
+		assert.that(sistema.consideraBuenaMascota(pepe, perro))
+		assert.notThat(sistema.consideraBuenaMascota(juan, gato))
+	}
+
+	test "Mascotas recomendables" {
+		sistema.fanaticoAgregaMascota(pepe, labrador)
+		sistema.fanaticoAgregaMascota(pepe, gato)
+		sistema.fanaticoDaAmor(pepe, labrador)
+		assert.equals([ perro, labrador ], sistema.mascotasBuenas(pepe))
+	}
+
+	test "Entrenadores Recomendables y mejor entrenador segun el dueño" {
+		sistema.fanaticoAgregaMascota(pepe, labrador)
+		sistema.fanaticoAgregaMascota(pepe, gato)
+		sistema.mascotaEsEntrenadaPor(perro, entrenador)
+		sistema.mascotaEsEntrenadaPor(labrador, entrenador2)
+		sistema.mascotaEsEntrenadaPor(gato, entrenador3)
+		assert.equals([ entrenador, entrenador2 ], sistema.entrenadoresRecomendables(pepe))
+		assert.equals(entrenador, sistema.entrenadorRecomendable(pepe))
+	}
+
+}
+
